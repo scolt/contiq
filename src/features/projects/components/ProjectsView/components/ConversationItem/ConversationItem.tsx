@@ -1,11 +1,12 @@
+import { Trash2 } from "lucide-react";
 import { cn } from "@/libs/utils/cn";
 import type { Conversation } from "@/features/projects/queries/getProjects";
-import { Button } from "@/components/Button";
 
 interface ConversationItemProps {
   conversation: Conversation;
   isActive: boolean;
   onSelect: (conversation: Conversation) => void;
+  onDelete: (conversationId: string) => void;
 }
 
 function formatDate(date: Date): string {
@@ -24,17 +25,19 @@ export function ConversationItem({
   conversation,
   isActive,
   onSelect,
+  onDelete,
 }: ConversationItemProps) {
   return (
-    <Button
-      variant="ghost"
-      onClick={() => onSelect(conversation)}
+    <div
       className={cn(
-        "h-auto w-full justify-start px-2.5 py-2",
-        isActive && "bg-brand-50 hover:bg-brand-50",
+        "group flex items-center rounded-md",
+        isActive && "bg-brand-50",
       )}
     >
-      <div className="min-w-0 flex-1 text-left">
+      <button
+        onClick={() => onSelect(conversation)}
+        className="min-w-0 flex-1 px-2.5 py-2 text-left"
+      >
         <p
           className={cn(
             "truncate text-xs font-medium leading-tight",
@@ -43,8 +46,18 @@ export function ConversationItem({
         >
           {conversation.conversationName}
         </p>
-        <p className="mt-0.5 text-[11px] text-gray-400">{formatDate(conversation.lastUpdatedAt)}</p>
-      </div>
-    </Button>
+        <p className="mt-0.5 text-[11px] text-gray-400">
+          {formatDate(conversation.lastUpdatedAt)}
+        </p>
+      </button>
+
+      <button
+        onClick={() => onDelete(conversation.id)}
+        className="mr-1 hidden h-6 w-6 flex-shrink-0 items-center justify-center rounded text-gray-400 hover:bg-red-50 hover:text-red-500 group-hover:flex"
+        aria-label="Delete chat"
+      >
+        <Trash2 size={11} />
+      </button>
+    </div>
   );
 }

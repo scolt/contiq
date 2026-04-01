@@ -16,7 +16,8 @@ export async function addFileSource(projectId: string, file: File, name?: string
 
   if (!user) throw new Error('Unauthorized')
 
-  const storagePath = `${user.id}/${projectId}/${Date.now()}-${file.name}`
+  const sanitizedFileName = file.name.replace(/\s/g, '-');
+  const storagePath = `${user.id}/${projectId}/${Date.now()}-${sanitizedFileName}`
   await uploadFile(supabaseAdminClientServer, storagePath, file)
 
   const [source] = await db

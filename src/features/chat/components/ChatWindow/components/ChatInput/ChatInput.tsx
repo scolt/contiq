@@ -9,9 +9,10 @@ const MAX_HEIGHT = 120;
 
 interface ChatInputProps {
   onSend: (message: string) => void;
+  disabled?: boolean;
 }
 
-export function ChatInput({ onSend }: ChatInputProps) {
+export function ChatInput({ onSend, disabled }: ChatInputProps) {
   const [value, setValue] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -74,7 +75,7 @@ export function ChatInput({ onSend }: ChatInputProps) {
         size="icon"
         type="button"
         onClick={handleSend}
-        disabled={!value.trim()}
+        disabled={!value.trim() || disabled}
         className="flex-shrink-0"
       >
         <Send size={14} />

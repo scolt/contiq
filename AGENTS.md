@@ -51,6 +51,8 @@ components/ # for global components used across features (e.g. Layout, Header, F
 - Use `cn()` utility from `libs/utils/cn` for conditional class merging.
 - Prefer `src/components` components for any generic UI element (Button, Card, TextInput, etc.).
 - If a UI component doesn't exist yet — create it in `src/componentns` following the UI Library pattern below.
+- DO NOT use short variable names (e.g. "m", "prev")
+- DO NOT make direct API calls or access the database from components. Use server actions and queries instead.
 
 ### Action Rules
 

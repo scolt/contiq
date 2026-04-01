@@ -6,7 +6,7 @@ CREATE TABLE "chats" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"project_id" uuid NOT NULL,
 	"user_id" uuid NOT NULL,
-	"title" text DEFAULT 'Новый чат' NOT NULL,
+	"title" text DEFAULT 'New chat' NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint

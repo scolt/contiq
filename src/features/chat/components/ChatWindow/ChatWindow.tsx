@@ -4,33 +4,11 @@ import { useState, useEffect, useRef } from "react";
 import { X, LayoutGrid } from "lucide-react";
 import type { Conversation } from "@/features/projects/queries/getProjects";
 import { Button } from "@/components/Button";
-import { ChatMessage, type ChatMessageData } from "./components/ChatMessage/ChatMessage";
+import { ChatMessage, type ChatMessageData, type MessageSource } from "./components/ChatMessage/ChatMessage";
 import { ChatInput } from "./components/ChatInput/ChatInput";
+import { getMessages } from "@/features/chat/queries/getMessages";
 
-const SEED_MESSAGES: ChatMessageData[] = [
-  {
-    id: "seed-1",
-    role: "user",
-    content: "Can you summarise the key points from the uploaded documents?",
-  },
-  {
-    id: "seed-2",
-    role: "assistant",
-    content:
-      "Based on the documents in this project, here are the key findings:\n\n1. **Market opportunity** is estimated at $4.2B by 2027, growing at 18% CAGR.\n2. **Primary risk factors** include regulatory changes and increased competition from new entrants.\n3. **Recommended action**: focus on customer retention before expanding to new segments.",
-  },
-  {
-    id: "seed-3",
-    role: "user",
-    content: "What does the data say about customer retention strategies?",
-  },
-  {
-    id: "seed-4",
-    role: "assistant",
-    content:
-      "The documents highlight three proven retention tactics:\n\n• Personalised onboarding reduces churn by up to 23%.\n• Proactive support outreach increases NPS by 15 points on average.\n• Loyalty programmes show strongest ROI when introduced at the 90-day mark.",
-  },
-];
+const SOURCES_SENTINEL = "\n\n__SOURCES__";
 
 interface ChatWindowProps {
   conversation: Conversation;
@@ -38,30 +16,89 @@ interface ChatWindowProps {
 }
 
 export function ChatWindow({ conversation, onClose }: ChatWindowProps) {
-  const [messages, setMessages] = useState<ChatMessageData[]>(SEED_MESSAGES);
+  const [messages, setMessages] = useState<ChatMessageData[]>([]);
+  const [isSending, setIsSending] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setMessages(SEED_MESSAGES);
+    setMessages([]);
+    getMessages(conversation.id).then(setMessages);
   }, [conversation.id]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  function handleSend(text: string) {
-    const userMsg: ChatMessageData = {
-      id: `u-${Date.now()}`,
-      role: "user",
-      content: text,
-    };
-    const aiMsg: ChatMessageData = {
-      id: `a-${Date.now()}`,
-      role: "assistant",
-      content:
-        "I'm reviewing the project documents to answer your question. Based on what I've found, this topic is covered in detail in section 3 of the uploaded files — would you like me to pull a direct quote?",
-    };
-    setMessages((prev) => [...prev, userMsg, aiMsg]);
+  async function handleSend(text: string) {
+    if (isSending) return;
+    setIsSending(true);
+
+    const aiId = `a-${Date.now()}`;
+    setMessages((prev) => [
+      ...prev,
+      { id: `u-${Date.now()}`, role: "user", content: text },
+      { id: aiId, role: "assistant", content: "", isStreaming: true },
+    ]);
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chatId: conversation.id,
+          projectId: conversation.projectId,
+          message: text,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Chat request failed");
+
+      const reader = response.body!.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        const sentinelIdx = buffer.indexOf(SOURCES_SENTINEL);
+        const displayContent =
+          sentinelIdx !== -1 ? buffer.slice(0, sentinelIdx) : buffer;
+
+        setMessages((prev) =>
+          prev.map((message) =>
+            message.id === aiId ? { ...message, content: displayContent } : message,
+          ),
+        );
+      }
+
+      const sentinelIdx = buffer.indexOf(SOURCES_SENTINEL);
+      let sources: MessageSource[] | undefined;
+      if (sentinelIdx !== -1) {
+        try {
+          sources = JSON.parse(buffer.slice(sentinelIdx + SOURCES_SENTINEL.length));
+        } catch {
+          // ignore parse error
+        }
+      }
+
+      setMessages((prev) =>
+        prev.map((message) =>
+          message.id === aiId ? { ...message, isStreaming: false, sources } : message,
+        ),
+      );
+    } catch {
+      setMessages((prev) =>
+        prev.map((message) =>
+          message.id === aiId
+            ? { ...message, content: "Sorry, something went wrong. Please try again.", isStreaming: false }
+            : message,
+        ),
+      );
+    } finally {
+      setIsSending(false);
+    }
   }
 
   return (
@@ -93,7 +130,7 @@ export function ChatWindow({ conversation, onClose }: ChatWindowProps) {
       </div>
 
       <div className="flex-shrink-0 px-5 py-4">
-        <ChatInput onSend={handleSend} />
+        <ChatInput onSend={handleSend} disabled={isSending} />
       </div>
     </div>
   );

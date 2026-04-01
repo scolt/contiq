@@ -32,7 +32,7 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "default": "'Новый чат'"
+          "default": "'New Chat'"
         },
         "created_at": {
           "name": "created_at",

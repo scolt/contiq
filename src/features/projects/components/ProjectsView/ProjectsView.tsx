@@ -1,71 +1,110 @@
 "use client";
 
 import { useState } from "react";
-import {
-  LayoutGrid,
-  Mic,
-  FileText,
-  Languages,
-  Search,
-  Image as ImageIcon,
-} from "lucide-react";
-import { cn } from "@/libs/utils/cn";
+import { useRouter } from "next/navigation";
+import { LayoutGrid, MessageSquarePlus, Search } from "lucide-react";
 import type { Project, Conversation } from "@/features/projects/queries/getProjects";
+import { PROJECT_ICON_MAP } from "@/features/projects/libs/projectIcons";
 import { ProjectAccordion } from "./components/ProjectAccordion/ProjectAccordion";
 import { ChatWindow } from "@/features/chat/components/ChatWindow/ChatWindow";
-import { ChatInput } from "@/features/chat/components/ChatWindow/components/ChatInput/ChatInput";
 import { Button } from "@/components/Button";
+import { createChat } from "@/features/chat/actions/createChat";
+import { deleteChat } from "@/features/chat/actions/deleteChat";
 
 interface ProjectsViewProps {
   projects: Project[];
 }
 
-const ACTION_CARDS = [
-  { label: "Chat Files", icon: FileText, from: "from-violet-500", to: "to-purple-600" },
-  { label: "Images", icon: ImageIcon, from: "from-pink-400", to: "to-purple-500" },
-  { label: "Translate", icon: Languages, from: "from-blue-400", to: "to-cyan-500" },
-  { label: "Audio Chat", icon: Mic, from: "from-orange-400", to: "to-amber-500" },
-];
+interface NewChatPanelProps {
+  projects: Project[];
+  onNewChat: (projectId: string) => void;
+  isCreating: boolean;
+}
 
-function NewChatPanel() {
+function NewChatPanel({ projects, onNewChat, isCreating }: NewChatPanelProps) {
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-sm">
-      <div className="flex flex-shrink-0 items-center gap-3 border-b border-gray-100 px-5 py-4">
+      <div className="flex flex-shrink-0 items-center gap-3 border-b border-gray-100 px-6 py-4">
         <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 shadow-md shadow-brand-400/30">
           <LayoutGrid size={15} className="text-white" />
         </div>
         <h2 className="flex-1 text-base font-semibold text-gray-800">New Chat</h2>
       </div>
 
-      <div className="flex-1 space-y-5 overflow-y-auto px-5 py-5">
-        {/* Greeting */}
-        <div className="flex gap-3">
-          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-xs font-semibold text-white shadow shadow-brand-400/20">
-            AI
-          </div>
-          <div className="min-w-0">
-            <p className="text-xl font-bold text-gray-800">Hi, How can I help you?</p>
-            <p className="mt-2 text-sm leading-relaxed text-gray-500">
-              Imagine that I&apos;m the manager of a product development team. List the main
-              risks associated with launching a new product.
+      <div className="flex flex-1 flex-col items-center justify-center overflow-y-auto px-6 py-10">
+        <div className="w-full max-w-2xl space-y-8">
+          <div className="text-center">
+            <p className="text-2xl font-bold text-gray-800">Hi, how can I help you?</p>
+            <p className="mt-2 text-sm text-gray-500">
+              Pick a project to start chatting with its documents.
             </p>
           </div>
-        </div>
-      </div>
 
-      <div className="flex-shrink-0 px-5 py-4">
-        <ChatInput onSend={() => {}} />
+          {projects.length > 0 && (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {projects.map((project) => {
+                const Icon = PROJECT_ICON_MAP[project.iconName] ?? PROJECT_ICON_MAP["FolderOpen"];
+                return (
+                  <button
+                    key={project.id}
+                    onClick={() => onNewChat(project.id)}
+                    disabled={isCreating}
+                    className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-left transition-colors hover:border-brand-200 hover:bg-brand-50 disabled:opacity-50"
+                  >
+                    <div
+                      className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg"
+                      style={{ backgroundColor: project.color + "33" }}
+                    >
+                      <Icon size={16} style={{ color: project.color }} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-gray-800">
+                        {project.projectName}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        {project.resourceCount} source{project.resourceCount !== 1 ? "s" : ""}
+                      </p>
+                    </div>
+                    <MessageSquarePlus size={15} className="ml-auto flex-shrink-0 text-brand-400" />
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
 }
 
 export function ProjectsView({ projects }: ProjectsViewProps) {
+  const router = useRouter();
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
+
+  async function handleNewChat(projectId: string) {
+    if (isCreating) return;
+    setIsCreating(true);
+    try {
+      const conv = await createChat(projectId);
+      setSelectedConversation(conv);
+      router.refresh();
+    } finally {
+      setIsCreating(false);
+    }
+  }
+
+  async function handleDeleteConversation(conversationId: string) {
+    await deleteChat(conversationId);
+    if (selectedConversation?.id === conversationId) {
+      setSelectedConversation(null);
+    }
+    router.refresh();
+  }
 
   return (
-    <div className="flex flex-1 gap-3 overflow-hidden py-3 pl-3">
-      {/* Sidebar */}
+    <div className="flex flex-1 gap-3 overflow-hidden p-3">
+      {/* Sidebar — only visible when a conversation is open */}
       <div className="flex w-72 flex-shrink-0 flex-col overflow-hidden rounded-2xl bg-white shadow-sm">
         <div className="flex flex-shrink-0 items-center justify-between border-b border-gray-100 px-4 py-4">
           <h1 className="text-base font-semibold text-gray-800">Chat results</h1>
@@ -82,20 +121,22 @@ export function ProjectsView({ projects }: ProjectsViewProps) {
               defaultOpen={i === 0}
               selectedConversationId={selectedConversation?.id ?? null}
               onSelectConversation={setSelectedConversation}
+              onDeleteConversation={handleDeleteConversation}
+              onNewChat={handleNewChat}
             />
           ))}
         </div>
       </div>
 
       {/* Main area */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden">
         {selectedConversation ? (
           <ChatWindow
             conversation={selectedConversation}
             onClose={() => setSelectedConversation(null)}
           />
         ) : (
-          <NewChatPanel />
+          <NewChatPanel projects={projects} onNewChat={handleNewChat} isCreating={isCreating} />
         )}
       </div>
     </div>
