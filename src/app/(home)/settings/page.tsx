@@ -1,3 +1,14 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Settings",
+  description: "Manage your Contiq account and application settings.",
+  openGraph: {
+    title: "Settings",
+    description: "Manage your Contiq account and application settings.",
+  },
+};
+
 export default function SettingsPage() {
   return (
     <div className="flex flex-1 items-center justify-center p-3">

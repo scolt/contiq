@@ -1,150 +1,281 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { createClient } from '@/libs/supabase/client'
-import { Button } from '@/components/Button'
-import { Loader2 } from 'lucide-react'
+import { useState } from 'react';
+import { createClient } from '@/libs/supabase/client';
+import { Button } from '@/components/Button';
+import { Logo } from '@/components/Logo';
+import { Loader2 } from 'lucide-react';
+
+const CAPABILITIES = [
+  {
+    emoji: '📄',
+    label: 'Document Intelligence',
+    detail:
+      'Upload contracts, briefs, and syllabi — query them like a seasoned expert.',
+  },
+  {
+    emoji: '🔍',
+    label: 'Semantic Search',
+    detail:
+      'Surface the exact clause, precedent, or concept across your entire library.',
+  },
+  {
+    emoji: '💬',
+    label: 'Cited Conversations',
+    detail:
+      'Ask nuanced questions; receive contextual answers with source references.',
+  },
+  {
+    emoji: '📁',
+    label: 'Knowledge Projects',
+    detail:
+      'Organise by case, matter, or course — full context always at hand.',
+  },
+];
+
+/* ─────────────────────────────────────────────────────────── */
 
 export function LoginPage() {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const handleGoogleSignIn = async () => {
-    setLoading(true)
-    const supabase = createClient()
+    setLoading(true);
+    const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/api/auth/callback`,
-      },
-    })
-    if (error) setLoading(false)
-  }
+      options: { redirectTo: `${window.location.origin}/api/auth/callback` },
+    });
+    if (error) setLoading(false);
+  };
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-6">
-      {/* Decorative background grid */}
-      <div
-        className="pointer-events-none fixed inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage:
-            'linear-gradient(var(--color-brand-600) 1px, transparent 1px), linear-gradient(90deg, var(--color-brand-600) 1px, transparent 1px)',
-          backgroundSize: '48px 48px',
-        }}
-      />
+    <main className="min-h-screen flex flex-col lg:flex-row">
+      <LoginPanel loading={loading} onSignIn={handleGoogleSignIn} />
+      <LandingPanel />
+    </main>
+  );
+}
 
-      <div className="relative flex flex-col items-center w-full max-w-[380px]">
-        {/* Floating logomark — bleeds above card */}
-        <div className="relative z-10 mb-[-1px]">
-          <LogoMark />
+/* ── Login panel ──────────────────────────────────────────── */
+
+interface LoginPanelProps {
+  loading: boolean;
+  onSignIn: () => void;
+}
+
+function LoginPanel({ loading, onSignIn }: LoginPanelProps) {
+  return (
+    <section className="relative flex flex-col items-center justify-center w-full lg:w-[420px] shrink-0 min-h-screen px-10 bg-[#F9F3E8]">
+      {/* Right-edge separator */}
+      <div className="hidden lg:block absolute right-0 inset-y-0 w-px bg-gradient-to-b from-transparent via-brand-200 to-transparent" />
+
+      {/* Subtle radial wash behind the card */}
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_80%_50%_at_50%_40%,rgba(212,184,150,0.18)_0%,transparent_70%)]" />
+
+      <div className="relative z-10 w-full flex flex-col items-center">
+        {/* Logomark + wordmark */}
+        <div className="mb-10 flex flex-col items-center gap-3">
+          <div className="w-20 h-20 rounded-2xl bg-brand-100/70 border border-brand-200/60 flex items-center justify-center shadow-sm">
+            <Logo width={120} height={120} className="text-cognac" />
+          </div>
+          <div className="text-center">
+            <span className="font-display text-[26px] font-bold tracking-[-0.03em] text-espresso block leading-none">
+              contiq
+            </span>
+            <p className="text-[12px] text-umber/70 mt-1.5 tracking-[0.06em] uppercase font-medium">
+              Document Intelligence
+            </p>
+          </div>
         </div>
 
         {/* Card */}
-        <div
-          className="w-full rounded-2xl border border-brand-200/50 bg-white/75 backdrop-blur-xl px-8 pt-10 pb-8 shadow-[0_2px_48px_rgba(124,58,237,0.10),0_0_0_1px_rgba(124,58,237,0.04)]"
-        >
-          {/* Wordmark */}
-          <div className="text-center mb-1">
-            <span
-              className="text-[28px] font-semibold tracking-[-0.04em] text-gray-900"
-              style={{ fontFamily: 'var(--font-sans, inherit)' }}
-            >
-              contiq
-            </span>
-          </div>
-
-          {/* Tagline */}
-          <p className="text-center text-[13px] text-gray-400 tracking-wide mb-8">
-            Your intelligent document workspace
-          </p>
-
-          {/* Divider */}
-          <div className="relative mb-8">
+        <div className="w-full rounded-2xl border border-brand-200/60 bg-white/55 backdrop-blur-md px-8 py-8 shadow-[0_2px_32px_rgba(92,61,30,0.08),0_0_0_1px_rgba(139,94,60,0.04)]">
+          <div className="relative mb-7">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-100" />
+              <div className="w-full border-t border-brand-100" />
             </div>
             <div className="relative flex justify-center">
-              <span className="bg-white/75 px-3 text-[11px] uppercase tracking-[0.12em] text-gray-300 font-medium">
+              <span className="bg-white/70 px-3 text-[10px] uppercase tracking-[0.16em] text-umber/50 font-semibold">
                 sign in to continue
               </span>
             </div>
           </div>
 
-          {/* Google OAuth Button */}
           <Button
             variant="outline"
             size="lg"
-            className="w-full gap-3 border-gray-200 hover:border-brand-300 hover:bg-brand-50 transition-colors"
+            className="w-full gap-3 border-brand-200 hover:border-cognac hover:bg-brand-50/70 transition-all duration-200"
             disabled={loading}
-            onClick={handleGoogleSignIn}
+            onClick={onSignIn}
           >
             {loading ? (
-              <Loader2 className="h-4 w-4 animate-spin text-brand-500" />
+              <Loader2 className="h-4 w-4 animate-spin text-cognac" />
             ) : (
               <GoogleIcon />
             )}
-            <span className="text-gray-700 font-medium">
+            <span className="text-espresso font-medium text-sm">
               {loading ? 'Redirecting…' : 'Continue with Google'}
             </span>
           </Button>
 
-          {/* Footer note */}
-          <p className="mt-6 text-center text-[11px] text-gray-300 leading-relaxed">
+          <p className="mt-5 text-center text-[11px] text-umber/45 leading-relaxed">
             By continuing, you agree to our{' '}
-            <span className="text-gray-400 underline underline-offset-2 cursor-pointer hover:text-brand-500 transition-colors">
+            <span className="text-umber/60 underline underline-offset-2 cursor-pointer hover:text-cognac transition-colors">
               Terms
             </span>{' '}
-            and{' '}
-            <span className="text-gray-400 underline underline-offset-2 cursor-pointer hover:text-brand-500 transition-colors">
+            &amp;{' '}
+            <span className="text-umber/60 underline underline-offset-2 cursor-pointer hover:text-cognac transition-colors">
               Privacy Policy
             </span>
           </p>
         </div>
+
+        {/* Audience chips */}
+        <div className="mt-7 flex items-center gap-2 flex-wrap justify-center">
+          <AudienceChip emoji="⚖️" label="Legal" />
+          <AudienceChip emoji="🎓" label="Education" />
+          <AudienceChip emoji="🔬" label="Research" />
+        </div>
       </div>
-    </main>
-  )
+    </section>
+  );
 }
 
-/* ─── Sub-components ─────────────────────────────────────── */
+/* ── Landing panel ────────────────────────────────────────── */
 
-function LogoMark() {
+function LandingPanel() {
   return (
-    <div className="flex items-center justify-center">
-      <svg
-        width="64"
-        height="64"
-        viewBox="0 0 64 64"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="drop-shadow-[0_4px_16px_rgba(124,58,237,0.3)]"
-        style={{ animation: 'spin-slow 18s linear infinite' }}
-      >
-        <style>{`
-          @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        `}</style>
-        {/* Outer ring — dashed */}
-        <circle
-          cx="32" cy="32" r="28"
-          stroke="#c4b5fd"
-          strokeWidth="1"
-          strokeDasharray="4 6"
-          strokeLinecap="round"
-        />
-        {/* Middle ring */}
-        <circle
-          cx="32" cy="32" r="20"
-          stroke="#a78bfa"
-          strokeWidth="1.5"
-          strokeDasharray="3 5"
-          strokeLinecap="round"
-          style={{ animation: 'spin-slow 12s linear infinite reverse' }}
-        />
-        {/* Core dot */}
-        <circle cx="32" cy="32" r="6" fill="#7c3aed" opacity="0.9" />
-        <circle cx="32" cy="32" r="3" fill="white" opacity="0.95" />
-      </svg>
-    </div>
-  )
+    <section className="hidden lg:flex flex-1 min-h-screen relative overflow-hidden flex-col justify-between px-16 py-14 bg-brand-800">
+      {/* Layered warm glows */}
+      <div className="absolute top-[-160px] right-[-80px] w-[560px] h-[560px] rounded-full bg-sienna/12 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-120px] left-[-60px] w-[420px] h-[420px] rounded-full bg-cognac/10 blur-[100px] pointer-events-none" />
+
+      {/* Faint cream grid */}
+      <div
+        className="absolute inset-0 opacity-[0.028] pointer-events-none"
+        style={{
+          backgroundImage:
+            'linear-gradient(rgba(245,236,215,1) 1px, transparent 1px), linear-gradient(90deg, rgba(245,236,215,1) 1px, transparent 1px)',
+          backgroundSize: '64px 64px',
+        }}
+      />
+
+      {/* Top-right corner ornament */}
+      <div className="absolute top-8 right-8 opacity-20">
+        <CornerOrnament />
+      </div>
+
+      {/* Main content */}
+      <div className="relative z-10 mt-4">
+        {/* Eyebrow */}
+        <div className="inline-flex items-center gap-2 bg-sienna/15 border border-sienna/20 rounded-full px-4 py-1.5 mb-10">
+          <span className="text-sienna text-xs">✦</span>
+          <span className="text-sand/80 text-[10px] font-semibold tracking-[0.18em] uppercase">
+            AI-Powered Document Intelligence
+          </span>
+        </div>
+
+        {/* Headline */}
+        <h1 className="font-display text-[48px] leading-[1.08] font-bold text-cream mb-5 max-w-[460px]">
+          Your documents,
+          <br />
+          finally{' '}
+          <span className="text-sienna italic">intelligent</span>.
+        </h1>
+
+        {/* Subheading */}
+        <p className="text-sand/70 text-[15px] leading-relaxed mb-12 max-w-[420px]">
+          From legal contracts to academic syllabi — Contiq transforms static
+          documents into a living, queryable knowledge base you can converse with.
+        </p>
+
+        {/* Feature grid */}
+        <div className="grid grid-cols-2 gap-4 max-w-[480px]">
+          {CAPABILITIES.map((capability) => (
+            <CapabilityCard key={capability.label} {...capability} />
+          ))}
+        </div>
+      </div>
+
+      {/* Bottom trust bar */}
+      <div className="relative z-10 pt-8 border-t border-white/[0.06]">
+        <div className="flex items-center justify-between">
+          <p className="text-umber/60 text-[11px] tracking-[0.08em] uppercase font-medium">
+            Built for professionals who handle complex documents daily
+          </p>
+          <div className="flex items-center gap-4 text-umber/40 text-[10px] tracking-widest uppercase">
+            <span>Secure</span>
+            <span className="w-px h-3 bg-umber/20" />
+            <span>Private</span>
+            <span className="w-px h-3 bg-umber/20" />
+            <span>Compliant</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }
+
+/* ── Capability card ──────────────────────────────────────── */
+
+interface CapabilityCardProps {
+  emoji: string;
+  label: string;
+  detail: string;
+}
+
+function CapabilityCard({ emoji, label, detail }: CapabilityCardProps) {
+  return (
+    <div className="flex flex-col gap-3 p-4 rounded-xl border border-white/[0.06] bg-white/[0.04] hover:bg-white/[0.07] hover:border-cognac/25 transition-all duration-200 group">
+      <div className="w-9 h-9 rounded-lg bg-cognac/20 border border-cognac/25 flex items-center justify-center text-lg group-hover:bg-cognac/30 transition-colors duration-200">
+        {emoji}
+      </div>
+      <div>
+        <p className="text-cream text-[13px] font-semibold mb-1 leading-snug">
+          {label}
+        </p>
+        <p className="text-sand/55 text-[11px] leading-relaxed">{detail}</p>
+      </div>
+    </div>
+  );
+}
+
+/* ── Audience chip ────────────────────────────────────────── */
+
+function AudienceChip({ emoji, label }: { emoji: string; label: string }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-brand-200/70 text-umber/65 text-[11px] font-medium bg-brand-50/40">
+      <span>{emoji}</span>
+      <span>{label}</span>
+    </span>
+  );
+}
+
+/* ── Corner ornament ──────────────────────────────────────── */
+
+function CornerOrnament() {
+  return (
+    <svg
+      width="80"
+      height="80"
+      viewBox="0 0 80 80"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M80 0 L80 80 M60 0 L60 80 M40 0 L40 80 M20 0 L20 80 M0 0 L80 0 M0 20 L80 20 M0 40 L80 40 M0 60 L80 60"
+        stroke="#F5ECD7"
+        strokeWidth="0.5"
+        opacity="0.6"
+      />
+      <circle cx="40" cy="40" r="18" stroke="#C9832A" strokeWidth="0.8" strokeDasharray="3 5" />
+      <circle cx="40" cy="40" r="8" stroke="#F5ECD7" strokeWidth="0.5" />
+      <circle cx="40" cy="40" r="2" fill="#C9832A" opacity="0.7" />
+    </svg>
+  );
+}
+
+/* ── Google icon ──────────────────────────────────────────── */
 
 function GoogleIcon() {
   return (
@@ -166,5 +297,5 @@ function GoogleIcon() {
         fill="#EA4335"
       />
     </svg>
-  )
+  );
 }

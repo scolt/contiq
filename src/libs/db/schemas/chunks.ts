@@ -1,6 +1,6 @@
-import {index, integer, pgTable, text, timestamp, uuid} from 'drizzle-orm/pg-core'
-import {vector} from './enums'
-import {sources} from './sources'
+import {index, integer, pgTable, text, timestamp, uuid} from 'drizzle-orm/pg-core';
+import {vector} from './enums';
+import {sources} from './sources';
 
 // userId and projectId are denormalized — vector search avoids JOINs
 export const chunks = pgTable('chunks', {
@@ -19,7 +19,7 @@ export const chunks = pgTable('chunks', {
   sourceIdx: index('chunks_source_id_idx').on(t.sourceId),
   projectIdx: index('chunks_project_id_idx').on(t.projectId),
   userIdx: index('chunks_user_id_idx').on(t.userId),
-}))
+}));
 
 export type Chunk = typeof chunks.$inferSelect
 export type NewChunk = typeof chunks.$inferInsert

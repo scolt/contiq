@@ -1,6 +1,6 @@
-import type { SupabaseClient } from '@supabase/supabase-js'
+import type { SupabaseClient } from '@supabase/supabase-js';
 
-const BUCKET = 'sources'
+const BUCKET = 'sources';
 
 export async function uploadFile(
   client: SupabaseClient,
@@ -9,10 +9,10 @@ export async function uploadFile(
 ): Promise<string> {
   const { error } = await client.storage
     .from(BUCKET)
-    .upload(storagePath, file, { upsert: false })
-  if (error) throw new Error(`Upload failed: ${error.message}`)
+    .upload(storagePath, file, { upsert: false });
+  if (error) throw new Error(`Upload failed: ${error.message}`);
 
-  return storagePath
+  return storagePath;
 }
 
 export async function downloadFile(
@@ -21,19 +21,19 @@ export async function downloadFile(
 ): Promise<Buffer> {
   const { data, error } = await client.storage
     .from(BUCKET)
-    .download(storagePath)
+    .download(storagePath);
 
-  if (error || !data) throw new Error(`Download failed: ${error?.message ?? 'unknown error'}`)
+  if (error || !data) throw new Error(`Download failed: ${error?.message ?? 'unknown error'}`);
 
-  return Buffer.from(await data.arrayBuffer())
+  return Buffer.from(await data.arrayBuffer());
 }
 
 export async function deleteFile(
   client: SupabaseClient,
   storagePath: string,
 ): Promise<void> {
-  const { error } = await client.storage.from(BUCKET).remove([storagePath])
-  if (error) throw new Error(`Delete failed: ${error.message}`)
+  const { error } = await client.storage.from(BUCKET).remove([storagePath]);
+  if (error) throw new Error(`Delete failed: ${error.message}`);
 }
 
 export async function createSignedUrl(
@@ -43,9 +43,9 @@ export async function createSignedUrl(
 ): Promise<string> {
   const { data, error } = await client.storage
     .from(BUCKET)
-    .createSignedUrl(storagePath, expiresIn)
+    .createSignedUrl(storagePath, expiresIn);
 
-  if (error || !data) throw new Error(`Signed URL failed: ${error?.message ?? 'unknown error'}`)
+  if (error || !data) throw new Error(`Signed URL failed: ${error?.message ?? 'unknown error'}`);
 
-  return data.signedUrl
+  return data.signedUrl;
 }

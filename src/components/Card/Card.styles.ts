@@ -1,7 +1,7 @@
 import { cva } from "class-variance-authority";
 
 export const cardVariants = cva(
-  "rounded-xl border border-foreground/10 bg-background text-foreground shadow-sm",
+  "rounded-2xl border border-brand-200/50 bg-white/90 text-foreground shadow-[0_2px_12px_rgba(44,26,14,0.07)]",
   {
     variants: {
       padding: {

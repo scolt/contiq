@@ -1,6 +1,6 @@
-import {index, pgTable, text, timestamp, uuid} from 'drizzle-orm/pg-core'
-import {projects} from './projects'
-import {users} from './users'
+import {index, pgTable, text, timestamp, uuid} from 'drizzle-orm/pg-core';
+import {projects} from './projects';
+import {users} from './users';
 
 export const chats = pgTable('chats', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -11,7 +11,7 @@ export const chats = pgTable('chats', {
 }, (t) => ({
   projectIdx: index('chats_project_id_idx').on(t.projectId),
   userIdx: index('chats_user_id_idx').on(t.userId),
-}))
+}));
 
 export type Chat = typeof chats.$inferSelect
 export type NewChat = typeof chats.$inferInsert

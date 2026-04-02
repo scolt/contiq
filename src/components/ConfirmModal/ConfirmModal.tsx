@@ -1,5 +1,5 @@
-import { Modal } from '@/components/Modal'
-import { Button } from '@/components/Button'
+import { Modal } from '@/components/Modal';
+import { Button } from '@/components/Button';
 
 export interface ConfirmModalProps {
   open: boolean
@@ -32,5 +32,5 @@ export function ConfirmModal({
         </Button>
       </div>
     </Modal>
-  )
+  );
 }

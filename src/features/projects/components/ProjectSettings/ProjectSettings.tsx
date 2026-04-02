@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Settings2 } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import { SourceList } from "./components/SourceList/SourceList";
 import { AddResourceWidget } from "./components/AddResourceWidget/AddResourceWidget";
 import { deleteSource } from "@/features/projects/actions/deleteSource";
@@ -36,7 +36,7 @@ export function ProjectSettings({ projectId, initialSources }: ProjectSettingsPr
 
   useEffect(() => {
     const hasPending = sources.some(
-      (s) => s.status === "pending" || s.status === "processing",
+      (source) => source.status === "pending" || source.status === "processing",
     );
     if (!hasPending) return;
     const id = setInterval(() => router.refresh(), 3000);
@@ -44,44 +44,37 @@ export function ProjectSettings({ projectId, initialSources }: ProjectSettingsPr
   }, [sources, router]);
 
   function handleDelete(id: string) {
-    setSources((prev) => prev.filter((s) => s.id !== id));
+    setSources((prev) => prev.filter((source) => source.id !== id));
     deleteSource(id, projectId);
   }
 
   function handleReindex(id: string) {
-    const source = sources.find((s) => s.id === id);
+    const source = sources.find((source) => source.id === id);
     if (!source || source.type === "file") return;
     setSources((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, status: "processing", chunksCount: 0 } : s)),
+      prev.map((source) => (source.id === id ? { ...source, status: "processing", chunksCount: 0 } : source)),
     );
     reindexSource(id, projectId);
   }
 
-  function handleAdd(
-    source: Omit<ProjectSource, "id" | "createdAt" | "chunksCount" | "status">,
-  ) {
-    const newSource: ProjectSource = {
-      ...source,
-      id: Math.random().toString(36).slice(2),
-      createdAt: new Date(),
-      chunksCount: 0,
-      status: "pending",
-    };
-    setSources((prev) => [...prev, newSource]);
-  }
-
   return (
-    <div className="flex flex-1 flex-col overflow-hidden p-6">
-      <div className="mb-6 flex flex-shrink-0 items-center gap-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-100">
-          <Settings2 size={18} className="text-brand-600" />
+    <div className="flex flex-1 flex-col overflow-hidden p-8">
+      <div className="mb-8 flex flex-shrink-0 items-center gap-4">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-800/10">
+          <BookOpen size={18} className="text-brand-700" strokeWidth={1.5} />
         </div>
         <div>
-          <h1 className="text-xl font-bold text-gray-800">Project Sources</h1>
-          <p className="text-xs text-gray-400">
+          <h1 className="font-display text-2xl font-bold text-brand-900 leading-tight tracking-tight">
+            Sources
+          </h1>
+          <p className="text-xs text-brand-400 mt-0.5">
             Manage documents, URLs, and text for this project
           </p>
         </div>
+        <div className="ml-4 h-8 w-px bg-brand-200" />
+        <span className="text-xs font-medium text-brand-500">
+          {sources.length} {sources.length === 1 ? "source" : "sources"}
+        </span>
       </div>
 
       <div className="mb-6 flex min-h-0 flex-1 flex-col">
@@ -93,8 +86,9 @@ export function ProjectSettings({ projectId, initialSources }: ProjectSettingsPr
       </div>
 
       <div className="flex-shrink-0">
-        <AddResourceWidget projectId={projectId} onAdd={handleAdd} />
+        <AddResourceWidget projectId={projectId} />
       </div>
     </div>
   );
 }
+

@@ -1,11 +1,14 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cn } from "@/libs/utils/cn";
+import { MessageReferences } from "./components/MessageReferences/MessageReferences";
 
 export type MessageRole = "user" | "assistant";
 
 export type MessageSource = {
   chunkId: string;
+  sourceId: string;
+  sourceType: "file" | "url" | "text";
   sourceUrl: string | null;
   sourceName: string;
   pageNumber: number | null;
@@ -27,61 +30,45 @@ export function ChatMessage({ message }: ChatMessageProps) {
   const isUser = message.role === "user";
 
   return (
-    <div className={cn("flex gap-3", isUser && "flex-row-reverse")}>
+    <div className={cn("flex gap-4", isUser && "flex-row-reverse")}>
+      {/* Avatar */}
       <div
         className={cn(
-          "flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-semibold",
+          "flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-[10px] font-semibold tracking-wide",
           isUser
-            ? "bg-brand-600 text-white"
-            : "bg-gradient-to-br from-brand-400 to-brand-600 text-white",
+            ? "bg-brand-700 text-cream"
+            : "bg-espresso text-sand",
         )}
       >
-        {isUser ? "U" : "AI"}
+        {isUser ? "You" : "AI"}
       </div>
 
       <div
         className={cn(
-          "max-w-[75%] text-sm leading-relaxed",
+          "max-w-[78%] leading-relaxed",
           isUser
-            ? "rounded-2xl rounded-tr-sm bg-brand-600 px-4 py-3 text-white"
-            : "py-1 text-gray-700",
+            ? "rounded-2xl rounded-tr-sm bg-brand-700 px-5 py-3.5 text-sm text-cream/95 shadow-sm"
+            : "py-0.5 text-brand-900",
         )}
       >
         {isUser ? (
           <p className="whitespace-pre-wrap">{message.content}</p>
         ) : (
-          <div className="prose prose-sm max-w-none prose-p:my-1 prose-headings:font-semibold prose-headings:text-gray-800 prose-h1:text-lg prose-h2:text-base prose-h3:text-sm prose-strong:text-gray-800 prose-code:rounded prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:text-xs prose-code:text-gray-800 prose-code:font-mono prose-pre:rounded-xl prose-pre:bg-gray-900 prose-pre:p-4 prose-pre:text-xs prose-pre:text-gray-100 prose-ul:my-1 prose-ol:my-1 prose-li:my-0.5 prose-blockquote:border-brand-300 prose-blockquote:text-gray-500 prose-a:text-brand-600 prose-a:no-underline hover:prose-a:underline prose-hr:border-gray-200 prose-table:text-xs prose-th:bg-gray-50 prose-th:font-semibold">
+          <div className="prose max-w-none text-[15px] leading-[1.75] prose-p:my-2 prose-headings:font-display prose-headings:font-semibold prose-headings:text-brand-900 prose-h1:text-xl prose-h2:text-lg prose-h3:text-base prose-strong:text-brand-800 prose-strong:font-semibold prose-code:rounded-md prose-code:bg-brand-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-xs prose-code:text-brand-800 prose-code:font-mono prose-pre:rounded-xl prose-pre:bg-brand-900 prose-pre:p-4 prose-pre:text-xs prose-pre:text-brand-100 prose-ul:my-2 prose-ol:my-2 prose-li:my-1 prose-blockquote:border-sienna/40 prose-blockquote:text-brand-600 prose-blockquote:italic prose-a:text-sienna prose-a:no-underline hover:prose-a:underline prose-hr:border-brand-100 prose-table:text-xs prose-th:bg-brand-50 prose-th:font-semibold prose-th:text-brand-700">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {message.content}
             </ReactMarkdown>
             {message.isStreaming && !message.content && (
-              <span className="inline-block h-4 w-1 animate-pulse bg-gray-400" />
+              <span className="inline-block h-4 w-0.5 animate-pulse bg-brand-400" />
             )}
           </div>
         )}
 
-        {!isUser && message.sources && message.sources.length > 0 && (
-          <div className="mt-3 border-t border-gray-100 pt-2">
-            <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400">
-              Sources
-            </p>
-            <div className="flex flex-col gap-1">
-              {message.sources.map((s, i) => (
-                <a
-                  key={s.chunkId}
-                  href={s.sourceUrl ?? "#"}
-                  target={s.sourceUrl ? "_blank" : undefined}
-                  rel="noreferrer"
-                  className="truncate text-[11px] text-brand-600 hover:underline"
-                >
-                  [{i + 1}] {s.sourceName}
-                  {s.pageNumber ? `, p. ${s.pageNumber}` : ""}
-                </a>
-              ))}
-            </div>
-          </div>
+        {!isUser && message.sources && (
+          <MessageReferences sources={message.sources} />
         )}
       </div>
     </div>
   );
 }
+

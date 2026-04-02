@@ -1,6 +1,6 @@
-import {index, integer, pgTable, text, timestamp, uuid} from 'drizzle-orm/pg-core'
-import {tokenTxTypeEnum} from './enums'
-import {users} from './users'
+import {index, integer, pgTable, text, timestamp, uuid} from 'drizzle-orm/pg-core';
+import {tokenTxTypeEnum} from './enums';
+import {users} from './users';
 
 export const tokenTransactions = pgTable('token_transactions', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -12,7 +12,7 @@ export const tokenTransactions = pgTable('token_transactions', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
 }, (t) => ({
   userIdx: index('token_tx_user_id_idx').on(t.userId),
-}))
+}));
 
 export type TokenTransaction = typeof tokenTransactions.$inferSelect
 export type NewTokenTransaction = typeof tokenTransactions.$inferInsert

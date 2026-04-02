@@ -24,3 +24,6 @@ export { ConfirmModal } from "./ConfirmModal";
 export type { ConfirmModalProps } from "./ConfirmModal";
 
 export { Tabs, TabsList, TabsTrigger, TabsContent } from "./Tabs";
+
+export { Logo } from "./Logo";
+export type { LogoProps } from "./Logo";

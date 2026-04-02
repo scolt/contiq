@@ -1,74 +1,89 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { Plus, FolderOpen } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/Button";
-import type { Project } from "@/features/projects/queries/getProjects";
-import { PROJECT_ICON_MAP } from "@/features/projects/libs/projectIcons";
+import type { ProjectsPageData } from "@/features/projects/queries/getProjects";
+import { StatsBar } from "./components/StatsBar/StatsBar";
+import { ProjectsToolbar, type SortKey } from "./components/ProjectsToolbar/ProjectsToolbar";
+import { ProjectsTable } from "./components/ProjectsTable/ProjectsTable";
+import { EmptyState } from "./components/EmptyState/EmptyState";
 import { NewProjectModal } from "./components/NewProjectModal/NewProjectModal";
 
 interface ProjectsGridProps {
-  projects: Project[];
+  data: ProjectsPageData;
 }
 
-export function ProjectsGrid({ projects }: ProjectsGridProps) {
+export function ProjectsGrid({ data }: ProjectsGridProps) {
   const [modalOpen, setModalOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [sortKey, setSortKey] = useState<SortKey>("lastActive");
+
+  const filtered = useMemo(() => {
+    let list = data.projects;
+    if (search.trim()) {
+      const lower = search.toLowerCase();
+      list = list.filter((p) => p.name.toLowerCase().includes(lower));
+    }
+    return [...list].sort((a, b) => {
+      switch (sortKey) {
+        case "name":
+          return a.name.localeCompare(b.name);
+        case "createdAt":
+          return b.createdAt.getTime() - a.createdAt.getTime();
+        case "sourcesCount":
+          return b.sourcesCount - a.sourcesCount;
+        case "lastActive":
+        default: {
+          if (!a.lastActive && !b.lastActive) return 0;
+          if (!a.lastActive) return 1;
+          if (!b.lastActive) return -1;
+          return b.lastActive.getTime() - a.lastActive.getTime();
+        }
+      }
+    });
+  }, [data.projects, search, sortKey]);
 
   return (
-    <div className="flex flex-1 flex-col overflow-y-auto p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Projects</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Manage and organize your document projects
-        </p>
+    <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex-shrink-0 border-b border-brand-200 px-10 pt-9 pb-7">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.12em] text-brand-400">
+              {data.userEmail}
+            </p>
+            <h1 className="font-display text-[2.5rem] font-bold leading-none tracking-tight text-espresso">
+              Projects
+            </h1>
+            <p className="mt-2 text-sm text-brand-500">Your curated knowledge base</p>
+          </div>
+          <Button onClick={() => setModalOpen(true)} className="mt-1 flex items-center gap-2">
+            <Plus size={14} strokeWidth={2} />
+            New Project
+          </Button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-        {/* New project card */}
-        <Button
-          variant="outline"
-          onClick={() => setModalOpen(true)}
-          className="group h-[88px] w-full justify-start gap-3 rounded-2xl border-2 border-dashed border-brand-200 bg-white px-4 hover:border-brand-400 hover:bg-brand-50"
-        >
-          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand-100 transition-colors group-hover:bg-brand-200">
-            <Plus size={18} className="text-brand-600" />
-          </div>
-          <div className="min-w-0 text-left">
-            <p className="truncate text-sm font-semibold text-gray-700 group-hover:text-brand-700">
-              New Project
-            </p>
-            <p className="mt-0.5 truncate text-xs text-gray-400">Organize your documents</p>
-          </div>
-        </Button>
+      <div className="flex flex-1 flex-col overflow-y-auto px-10 py-7 gap-6">
+        <StatsBar
+          totalProjects={data.projects.length}
+          totalSources={data.totalSources}
+          totalChats={data.totalChats}
+        />
 
-        {/* Project cards */}
-        {projects.map((project) => {
-          const Icon = PROJECT_ICON_MAP[project.iconName] ?? FolderOpen;
-          return (
-            <Link
-              key={project.id}
-              href={`/projects/${project.id}`}
-              className="group flex h-[88px] items-center gap-3 rounded-2xl border border-gray-100 bg-white px-4 shadow-sm transition-all hover:border-brand-200 hover:shadow-md"
-            >
-              <div
-                style={{ backgroundColor: project.color }}
-                className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl transition-opacity group-hover:opacity-80"
-              >
-                <Icon size={18} className="text-gray-700" />
-              </div>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-gray-800 group-hover:text-brand-700">
-                  {project.projectName}
-                </p>
-                <p className="mt-0.5 text-xs text-gray-400">
-                  {project.resourceCount}{" "}
-                  {project.resourceCount === 1 ? "resource" : "resources"}
-                </p>
-              </div>
-            </Link>
-          );
-        })}
+        {data.projects.length === 0 ? (
+          <EmptyState onCreateProject={() => setModalOpen(true)} />
+        ) : (
+          <>
+            <ProjectsToolbar
+              search={search}
+              onSearch={setSearch}
+              sortKey={sortKey}
+              onSort={setSortKey}
+            />
+            <ProjectsTable projects={filtered} />
+          </>
+        )}
       </div>
 
       <NewProjectModal open={modalOpen} onOpenChange={setModalOpen} />

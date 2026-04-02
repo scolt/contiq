@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, type KeyboardEvent } from "react";
-import { Send, Mic, Paperclip } from "lucide-react";
+import { Send } from "lucide-react";
 import { Button } from "@/components/Button";
 import { Textarea } from "@/components/Textarea";
 
@@ -50,25 +50,17 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   }
 
   return (
-    <div className="flex items-end gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-2.5 shadow-sm">
-      <Button variant="ghost" size="icon" type="button" className="mb-0.5 flex-shrink-0">
-        <Paperclip size={18} />
-      </Button>
-
+    <div className="flex items-end gap-3 rounded-2xl border border-brand-200 bg-white/80 px-4 py-3 shadow-[0_2px_10px_rgba(44,26,14,0.06)] focus-within:border-brand-300 focus-within:shadow-[0_2px_10px_rgba(44,26,14,0.10)] transition-all">
       <Textarea
         ref={textareaRef}
         variant="ghost"
         value={value}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        placeholder="Ask me anything..."
+        placeholder="Ask anything about your documents…"
         rows={1}
-        className="flex-1 py-[7px] leading-[1.4] overflow-hidden"
+        className="flex-1 py-[5px] leading-[1.5] overflow-hidden text-[15px] placeholder:text-brand-300"
       />
-
-      <Button variant="ghost" size="icon" type="button" className="mb-0.5 flex-shrink-0">
-        <Mic size={18} />
-      </Button>
 
       <Button
         variant="default"
@@ -76,10 +68,11 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
         type="button"
         onClick={handleSend}
         disabled={!value.trim() || disabled}
-        className="flex-shrink-0"
+        className="h-8 w-8 flex-shrink-0 rounded-xl"
       >
-        <Send size={14} />
+        <Send size={13} strokeWidth={2} />
       </Button>
     </div>
   );
 }
+

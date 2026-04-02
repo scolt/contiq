@@ -1,4 +1,4 @@
-import { Modal } from '@/components/Modal'
+import { Modal } from '@/components/Modal';
 
 interface ViewTextModalProps {
   open: boolean
@@ -14,5 +14,5 @@ export function ViewTextModal({ open, onOpenChange, title, content }: ViewTextMo
         {content}
       </div>
     </Modal>
-  )
+  );
 }

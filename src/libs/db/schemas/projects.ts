@@ -1,5 +1,5 @@
-import {index, pgTable, text, timestamp, uuid} from 'drizzle-orm/pg-core'
-import {users} from './users'
+import {index, pgTable, text, timestamp, uuid} from 'drizzle-orm/pg-core';
+import {users} from './users';
 
 export const projects = pgTable('projects', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -10,7 +10,7 @@ export const projects = pgTable('projects', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
 }, (t) => ({
   userIdx: index('projects_user_id_idx').on(t.userId),
-}))
+}));
 
 export type Project = typeof projects.$inferSelect
 export type NewProject = typeof projects.$inferInsert

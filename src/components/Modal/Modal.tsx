@@ -1,6 +1,6 @@
-import * as Dialog from '@radix-ui/react-dialog'
-import { X } from 'lucide-react'
-import { cn } from '@/libs/utils/cn'
+import * as Dialog from '@radix-ui/react-dialog';
+import { X } from 'lucide-react';
+import { cn } from '@/libs/utils/cn';
 
 export interface ModalProps {
   open: boolean
@@ -36,5 +36,5 @@ export function Modal({ open, onOpenChange, title, children, className }: ModalP
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
-  )
+  );
 }

@@ -15,19 +15,26 @@ interface FileImportProps {
 export function FileImport({ projectId }: FileImportProps) {
   const [file, setFile] = useState<File | null>(null);
   const [name, setName] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
   function handleFileChange(f: File | null) {
     setFile(f);
+    setError(null);
     if (f) setName((prev) => prev || f.name.replace(/\.[^.]+$/, ""));
     else setName("");
   }
 
   function handleProcess() {
     if (!file) return;
+    setError(null);
     startTransition(async () => {
-      await addFileSource(projectId, file, name);
+      const result = await addFileSource(projectId, file, name);
+      if (result?.error) {
+        setError(result.error);
+        return;
+      }
       setFile(null);
       setName("");
       router.refresh();
@@ -43,6 +50,9 @@ export function FileImport({ projectId }: FileImportProps) {
         disabled={isPending}
       />
       <FileDropZone file={file} onFileChange={isPending ? () => {} : handleFileChange} />
+      {error && (
+        <p className="text-xs font-medium text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>
+      )}
       <div className="mt-auto flex justify-end pt-1">
         <Button onClick={handleProcess} disabled={!file || isPending} className="gap-2">
           {isPending

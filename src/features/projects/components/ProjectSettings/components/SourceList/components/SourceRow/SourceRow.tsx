@@ -33,9 +33,9 @@ const TYPE_CONFIG: Record<
     className: string;
   }
 > = {
-  file: { label: "File", icon: FileText, className: "bg-blue-50 text-blue-600" },
-  url: { label: "URL", icon: Link2, className: "bg-violet-50 text-violet-600" },
-  text: { label: "Text", icon: AlignLeft, className: "bg-teal-50 text-teal-600" },
+  file: { label: "File", icon: FileText, className: "bg-brand-100 text-brand-600" },
+  url: { label: "URL", icon: Link2, className: "bg-sienna/10 text-sienna" },
+  text: { label: "Text", icon: AlignLeft, className: "bg-bark/10 text-bark" },
 };
 
 const STATUS_CONFIG: Record<
@@ -46,10 +46,10 @@ const STATUS_CONFIG: Record<
     className: string;
   }
 > = {
-  pending: { label: "Pending", icon: Clock, className: "bg-gray-100 text-gray-500" },
-  processing: { label: "Processing", icon: Zap, className: "bg-amber-50 text-amber-600" },
-  ready: { label: "Ready", icon: CheckCircle2, className: "bg-green-50 text-green-600" },
-  error: { label: "Error", icon: AlertCircle, className: "bg-red-50 text-red-500" },
+  pending: { label: "Pending", icon: Clock, className: "bg-sand/30 text-brand-500" },
+  processing: { label: "Processing", icon: Zap, className: "bg-sienna/10 text-sienna" },
+  ready: { label: "Indexed", icon: CheckCircle2, className: "bg-forest/10 text-forest" },
+  error: { label: "Error", icon: AlertCircle, className: "bg-red-50 text-red-600" },
 };
 
 function formatDate(date: Date): string {
@@ -112,38 +112,39 @@ export function SourceRow({ source, onDelete, onReindex }: SourceRowProps) {
 
   return (
     <>
-      <div className="grid grid-cols-[120px_1fr_120px_80px_110px_44px] items-center px-4 py-3 transition-colors hover:bg-gray-50/50">
+      <div className="grid grid-cols-[120px_1fr_120px_80px_120px_44px] items-center px-5 py-4 transition-colors hover:bg-brand-50/40">
         <div
           className={cn(
-            "inline-flex w-fit items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium",
+            "inline-flex w-fit items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium",
             typeConfig.className,
           )}
         >
-          <TypeIcon size={12} />
+          <TypeIcon size={12} strokeWidth={1.5} />
           {typeConfig.label}
         </div>
 
         <div className="min-w-0 pr-4">
-          <p className="truncate text-sm font-medium text-gray-800">{source.name}</p>
+          <p className="truncate text-sm font-medium text-brand-900">{source.name}</p>
           {source.url && (
-            <p className="mt-0.5 truncate text-xs text-gray-400">{source.url}</p>
+            <p className="mt-0.5 truncate text-xs text-brand-400">{source.url}</p>
           )}
         </div>
 
-        <span className="text-xs text-gray-500">{formatDate(source.createdAt)}</span>
+        <span className="text-xs text-brand-500">{formatDate(source.createdAt)}</span>
 
-        <span className="text-xs font-medium text-gray-700">
+        <span className="text-xs font-medium text-brand-700">
           {source.status === "ready" ? source.chunksCount : "—"}
         </span>
 
         <div
           className={cn(
-            "inline-flex w-fit items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium",
+            "inline-flex w-fit items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium",
             statusConfig.className,
           )}
         >
           <StatusIcon
             size={12}
+            strokeWidth={1.5}
             className={source.status === "processing" ? "animate-pulse" : ""}
           />
           {statusConfig.label}
@@ -153,7 +154,7 @@ export function SourceRow({ source, onDelete, onReindex }: SourceRowProps) {
           <button
             ref={buttonRef}
             onClick={handleToggle}
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-brand-400 transition-colors hover:bg-brand-100 hover:text-brand-700"
           >
             <MoreHorizontal size={15} />
           </button>
@@ -161,29 +162,29 @@ export function SourceRow({ source, onDelete, onReindex }: SourceRowProps) {
             <div
               ref={menuRef}
               style={{ top: menuPos.top, right: menuPos.right }}
-              className="fixed z-50 min-w-[150px] rounded-xl border border-gray-100 bg-white py-1 shadow-lg shadow-gray-200/60"
+              className="fixed z-50 min-w-[150px] rounded-xl border border-brand-100 bg-white py-1 shadow-[0_4px_24px_rgba(44,26,14,0.12)]"
             >
               <button
                 onClick={handleViewSource}
-                className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-brand-700 transition-colors hover:bg-brand-50"
               >
-                <ExternalLink size={13} className="text-gray-400" />
+                <ExternalLink size={13} className="text-brand-400" strokeWidth={1.5} />
                 View source
               </button>
               <button
                 onClick={() => { setOpen(false); onReindex(source.id); }}
                 disabled={source.type === "file"}
-                className="flex w-full items-center gap-2.5 px-3 py-2 text-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40 text-gray-700"
+                className="flex w-full items-center gap-2.5 px-3 py-2 text-sm transition-colors hover:bg-brand-50 disabled:cursor-not-allowed disabled:opacity-40 text-brand-700"
               >
-                <RefreshCw size={13} className="text-gray-400" />
+                <RefreshCw size={13} className="text-brand-400" strokeWidth={1.5} />
                 Re-index
               </button>
-              <div className="my-1 border-t border-gray-100" />
+              <div className="my-1 border-t border-brand-100" />
               <button
                 onClick={() => { setOpen(false); setConfirmDeleteOpen(true); }}
                 className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
               >
-                <Trash2 size={13} className="text-red-400" />
+                <Trash2 size={13} className="text-red-400" strokeWidth={1.5} />
                 Delete
               </button>
             </div>,

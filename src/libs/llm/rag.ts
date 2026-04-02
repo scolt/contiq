@@ -1,12 +1,14 @@
-import { embed } from 'ai'
-import { openai } from '@ai-sdk/openai'
-import { db } from '@/libs/db/db'
-import { chunks } from '@/libs/db/schemas/chunks'
-import { sources } from '@/libs/db/schemas/sources'
-import { and, eq, sql } from 'drizzle-orm'
+import { embed } from 'ai';
+import { openai } from '@ai-sdk/openai';
+import { db } from '@/libs/db/db';
+import { chunks } from '@/libs/db/schemas/chunks';
+import { sources } from '@/libs/db/schemas/sources';
+import { and, eq, sql } from 'drizzle-orm';
 
 export type SourceUsed = {
   chunkId: string
+  sourceId: string
+  sourceType: 'file' | 'url' | 'text'
   sourceUrl: string | null
   sourceName: string
   pageNumber: number | null
@@ -17,19 +19,20 @@ export async function retrieveContextForChat(params: {
   projectId: string
   userId: string
 }): Promise<{ systemPrompt: string; sourcesUsed: SourceUsed[] }> {
-  const { message, projectId, userId } = params
+  const { message, projectId, userId } = params;
 
   const { embedding } = await embed({
     model: openai.embedding('text-embedding-3-small'),
     value: message,
-  })
-  const vectorStr = `[${embedding.join(',')}]`
+  });
+  const vectorStr = `[${embedding.join(',')}]`;
 
   const topChunks = await db
     .select({
       id: chunks.id,
       content: chunks.content,
       sourceId: chunks.sourceId,
+      sourceType: sources.type,
       sourceUrl: chunks.sourceUrl,
       pageNumber: chunks.pageNumber,
       sourceName: sources.name,
@@ -38,20 +41,22 @@ export async function retrieveContextForChat(params: {
     .innerJoin(sources, eq(sources.id, chunks.sourceId))
     .where(and(eq(chunks.projectId, projectId), eq(chunks.userId, userId)))
     .orderBy(sql`chunks.embedding <=> ${vectorStr}::vector`)
-    .limit(8)
+    .limit(8);
 
-  const seen = new Set<string>()
-  const sourcesUsed: SourceUsed[] = []
+  const seen = new Set<string>();
+  const sourcesUsed: SourceUsed[] = [];
   for (const chunk of topChunks) {
-    const key = `${chunk.sourceId}-${chunk.pageNumber ?? 0}`
+    const key = `${chunk.sourceId}-${chunk.pageNumber ?? 0}`;
     if (!seen.has(key)) {
-      seen.add(key)
+      seen.add(key);
       sourcesUsed.push({
         chunkId: chunk.id,
+        sourceId: chunk.sourceId,
+        sourceType: chunk.sourceType,
         sourceUrl: chunk.sourceUrl,
         sourceName: chunk.sourceName,
         pageNumber: chunk.pageNumber,
-      })
+      });
     }
   }
 
@@ -60,7 +65,7 @@ export async function retrieveContextForChat(params: {
       (chunk, index) =>
         `[${index + 1}] (${chunk.sourceName}${chunk.pageNumber ? `, page ${chunk.pageNumber}` : ''})\n${chunk.content}`,
     )
-    .join('\n\n---\n\n')
+    .join('\n\n---\n\n');
 
   const systemPrompt =
     topChunks.length > 0
@@ -72,7 +77,7 @@ Context:
 ${context}`
       : `You are a helpful AI assistant. No relevant documents were found for this project yet.
 Answer the user's question to the best of your ability.
-Answer in the same language as the user's question.`
+Answer in the same language as the user's question.`;
 
-  return { systemPrompt, sourcesUsed }
+  return { systemPrompt, sourcesUsed };
 }

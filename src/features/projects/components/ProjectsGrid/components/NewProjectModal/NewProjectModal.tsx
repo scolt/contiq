@@ -18,7 +18,7 @@ interface NewProjectModalProps {
 export function NewProjectModal({ open, onOpenChange }: NewProjectModalProps) {
   const [name, setName] = useState("");
   const [selectedIcon, setSelectedIcon] = useState("BarChart2");
-  const [selectedColor, setSelectedColor] = useState(PROJECT_COLORS[0]);
+  const [selectedColor, setSelectedColor] = useState<string>(PROJECT_COLORS[0]);
   const [isPending, startTransition] = useTransition();
 
   function handleCreate() {

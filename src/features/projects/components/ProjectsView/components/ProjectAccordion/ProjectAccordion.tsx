@@ -5,7 +5,6 @@ import { ChevronDown, Plus } from "lucide-react";
 import { cn } from "@/libs/utils/cn";
 import type { Project, Conversation } from "@/features/projects/queries/getProjects";
 import { PROJECT_ICON_MAP } from "@/features/projects/libs/projectIcons";
-import { Button } from "@/components/Button";
 import { ConversationItem } from "../ConversationItem/ConversationItem";
 
 interface ProjectAccordionProps {
@@ -30,25 +29,27 @@ export function ProjectAccordion({
 
   return (
     <div>
-      <Button
-        variant="ghost"
-        onClick={() => setIsOpen((v) => !v)}
-        className="h-auto w-full justify-start gap-2.5 px-2 py-2"
+      <button
+        onClick={() => setIsOpen((open) => !open)}
+        className="flex h-auto w-full items-center justify-start gap-2.5 rounded-xl px-2.5 py-2 text-left transition-colors hover:bg-sand"
       >
-        <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-brand-100">
-          <Icon size={14} className="text-brand-600" />
+        <div
+          className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md border-sand border-1"
+          style={{ backgroundColor: project.color }}
+        >
+          <Icon size={16} className="text-espresso" strokeWidth={1.5} />
         </div>
-        <span className="flex-1 truncate text-xs font-semibold text-gray-700">
+        <span className="flex-1 truncate text-xs font-semibold uppercase tracking-[0.06em] text-bark">
           {project.projectName}
         </span>
         <ChevronDown
-          size={13}
+          size={12}
           className={cn(
-            "flex-shrink-0 text-gray-400 transition-transform duration-200",
+            "flex-shrink-0 text-umber transition-transform duration-200",
             isOpen && "rotate-180",
           )}
         />
-      </Button>
+      </button>
 
       <div
         className={cn(
@@ -56,7 +57,7 @@ export function ProjectAccordion({
           isOpen ? "max-h-[500px]" : "max-h-0",
         )}
       >
-        <div className="ml-3 border-l border-gray-100 pl-2 pt-0.5 pb-1">
+        <div className="ml-3 border-l border-sand pl-2 pt-0.5 pb-1">
           {project.conversations.map((conv) => (
             <ConversationItem
               key={conv.id}
@@ -69,13 +70,14 @@ export function ProjectAccordion({
 
           <button
             onClick={() => onNewChat(project.id)}
-            className="mt-0.5 flex w-full items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[11px] font-medium text-brand-600 hover:bg-brand-50 hover:text-brand-700 transition-colors"
+            className="mt-0.5 flex w-full items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] font-medium text-umber hover:bg-sand hover:text-bark transition-colors"
           >
-            <Plus size={11} />
-            Start a new chat
+            <Plus size={10} strokeWidth={2} />
+            New conversation
           </button>
         </div>
       </div>
     </div>
   );
 }
+

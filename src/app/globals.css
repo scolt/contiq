@@ -2,41 +2,67 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F9F3E8;
+  --foreground: #2C1A0E;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-dm-sans);
+  --font-display: var(--font-playfair);
 
-  /* Brand — violet/purple palette */
-  --color-brand-50: #f5f3ff;
-  --color-brand-100: #ede9fe;
-  --color-brand-200: #ddd6fe;
-  --color-brand-300: #c4b5fd;
-  --color-brand-400: #a78bfa;
-  --color-brand-500: #8b5cf6;
-  --color-brand-600: #7c3aed;
-  --color-brand-700: #6d28d9;
-  --color-brand-800: #5b21b6;
-  --color-brand-900: #4c1d95;
-  --color-brand-950: #2e1065;
+  /* Brand — warm brown palette */
+  --color-brand-50:  #FBF8F3;
+  --color-brand-100: #F5ECD7;
+  --color-brand-200: #E8D5AE;
+  --color-brand-300: #D4B896;
+  --color-brand-400: #B08860;
+  --color-brand-500: #9A6E44;
+  --color-brand-600: #8B5E3C;
+  --color-brand-700: #5C3D1E;
+  --color-brand-800: #3D2510;
+  --color-brand-900: #2C1A0E;
+  --color-brand-950: #1A0E06;
+
+  /* Named semantic colors */
+  --color-espresso:  #2C1A0E;
+  --color-cognac:    #8B5E3C;
+  --color-sienna:    #C9832A;
+  --color-cream:     #F5ECD7;
+  --color-sand:      #D4B896;
+  --color-parchment: #EDE0C4;
+  --color-umber:     #A0856A;
+  --color-bark:      #5C3D1E;
+  --color-forest:    #3D6B4F;
 
   /* App canvas */
-  --color-canvas: #f5f3ff;
+  --color-canvas: #F9F3E8;
 }
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  background-color: #f5f3ff;
-  background-image: radial-gradient(
-    ellipse 90% 55% at 65% -5%,
-    rgba(167, 139, 250, 0.18) 0%,
-    rgba(245, 243, 255, 0.85) 55%,
-    #f5f3ff 100%
-  );
+  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  background-color: #F9F3E8;
+  background-image:
+    radial-gradient(ellipse 120% 60% at 70% -10%, rgba(201, 131, 42, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 50% at 10% 90%, rgba(139, 94, 60, 0.05) 0%, transparent 55%);
   background-attachment: fixed;
+}
+
+/* Paper grain texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+}
+
+/* Display font utility */
+.font-display {
+  font-family: var(--font-playfair), 'Playfair Display', Georgia, serif;
 }

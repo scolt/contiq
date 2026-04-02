@@ -9,6 +9,6 @@ export const PROJECT_COLORS = [
   '#fbcfe8', // pink
   '#d9f99d', // lime
   '#e0e7ff', // indigo
-] as const
+] as const;
 
 export type ProjectColor = typeof PROJECT_COLORS[number]

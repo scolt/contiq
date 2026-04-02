@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { X, LayoutGrid } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { X } from "lucide-react";
 import type { Conversation } from "@/features/projects/queries/getProjects";
 import { Button } from "@/components/Button";
 import { ChatMessage, type ChatMessageData, type MessageSource } from "./components/ChatMessage/ChatMessage";
@@ -19,6 +20,7 @@ export function ChatWindow({ conversation, onClose }: ChatWindowProps) {
   const [messages, setMessages] = useState<ChatMessageData[]>([]);
   const [isSending, setIsSending] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     setMessages([]);
@@ -51,7 +53,20 @@ export function ChatWindow({ conversation, onClose }: ChatWindowProps) {
         }),
       });
 
-      if (!response.ok) throw new Error("Chat request failed");
+      if (!response.ok) {
+        if (response.status === 402) {
+          const errorText = await response.text();
+          setMessages((prev) =>
+            prev.map((message) =>
+              message.id === aiId
+                ? { ...message, content: errorText, isStreaming: false }
+                : message,
+            ),
+          );
+          return;
+        }
+        throw new Error("Chat request failed");
+      }
 
       const reader = response.body!.getReader();
       const decoder = new TextDecoder();
@@ -88,6 +103,7 @@ export function ChatWindow({ conversation, onClose }: ChatWindowProps) {
           message.id === aiId ? { ...message, isStreaming: false, sources } : message,
         ),
       );
+      router.refresh();
     } catch {
       setMessages((prev) =>
         prev.map((message) =>
@@ -102,13 +118,12 @@ export function ChatWindow({ conversation, onClose }: ChatWindowProps) {
   }
 
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-sm">
-      <div className="flex flex-shrink-0 items-center justify-between border-b border-gray-100 px-5 py-4">
+    <div className="flex h-full flex-col overflow-hidden rounded-2xl bg-white/95 shadow-[0_4px_24px_rgba(44,26,14,0.08)] border border-brand-200/40">
+      {/* Header */}
+      <div className="flex flex-shrink-0 items-center justify-between border-b border-brand-100 bg-brand-50/50 px-6 py-4">
         <div className="flex min-w-0 items-center gap-3">
-          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 shadow-md shadow-brand-400/20">
-            <LayoutGrid size={15} className="text-white" />
-          </div>
-          <h2 className="truncate text-base font-semibold text-gray-800">
+          <div className="h-1.5 w-1.5 rounded-full bg-sienna/60 flex-shrink-0" />
+          <h2 className="truncate font-display text-base font-semibold text-brand-900 italic">
             {conversation.conversationName}
           </h2>
         </div>
@@ -118,20 +133,23 @@ export function ChatWindow({ conversation, onClose }: ChatWindowProps) {
           onClick={onClose}
           className="ml-3 h-7 w-7 flex-shrink-0"
         >
-          <X size={16} />
+          <X size={15} strokeWidth={1.5} />
         </Button>
       </div>
 
-      <div className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
+      {/* Messages */}
+      <div className="flex-1 space-y-6 overflow-y-auto px-8 py-6">
         {messages.map((msg) => (
           <ChatMessage key={msg.id} message={msg} />
         ))}
         <div ref={bottomRef} />
       </div>
 
-      <div className="flex-shrink-0 px-5 py-4">
+      {/* Input */}
+      <div className="flex-shrink-0 border-t border-brand-100 px-6 py-4">
         <ChatInput onSend={handleSend} disabled={isSending} />
       </div>
     </div>
   );
 }
+

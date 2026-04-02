@@ -1,7 +1,7 @@
-import {index, integer, pgTable, text, timestamp, uuid} from 'drizzle-orm/pg-core'
-import {sourceStatusEnum, sourceTypeEnum} from './enums'
-import {projects} from './projects'
-import {users} from './users'
+import {index, integer, pgTable, text, timestamp, uuid} from 'drizzle-orm/pg-core';
+import {sourceStatusEnum, sourceTypeEnum} from './enums';
+import {projects} from './projects';
+import {users} from './users';
 
 export const sources = pgTable('sources', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -19,7 +19,7 @@ export const sources = pgTable('sources', {
   projectIdx: index('sources_project_id_idx').on(t.projectId),
   userIdx: index('sources_user_id_idx').on(t.userId),
   statusIdx: index('sources_status_idx').on(t.status),
-}))
+}));
 
 export type Source = typeof sources.$inferSelect
 export type NewSource = typeof sources.$inferInsert
