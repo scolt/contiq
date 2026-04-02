@@ -119,7 +119,7 @@ export function SourceRow({ source, onDelete, onReindex }: SourceRowProps) {
             typeConfig.className,
           )}
         >
-          <TypeIcon size={12} strokeWidth={1.5} />
+          <TypeIcon size={12} />
           {typeConfig.label}
         </div>
 
@@ -144,7 +144,6 @@ export function SourceRow({ source, onDelete, onReindex }: SourceRowProps) {
         >
           <StatusIcon
             size={12}
-            strokeWidth={1.5}
             className={source.status === "processing" ? "animate-pulse" : ""}
           />
           {statusConfig.label}
