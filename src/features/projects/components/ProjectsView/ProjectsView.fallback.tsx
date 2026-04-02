@@ -1,8 +1,8 @@
 export function ProjectsViewSkeleton() {
   return (
-    <div className="flex flex-1 gap-3 overflow-hidden p-3">
-      {/* Sidebar */}
-      <div className="flex w-72 flex-shrink-0 flex-col overflow-hidden rounded-2xl border border-sand bg-parchment">
+    <div className="flex flex-1 overflow-hidden p-2 sm:gap-3 sm:p-3">
+      {/* Sidebar — full width on mobile */}
+      <div className="flex w-full flex-shrink-0 flex-col overflow-hidden rounded-2xl border border-sand bg-parchment sm:w-72">
         <div className="flex flex-shrink-0 items-center justify-between border-b border-sand px-5 py-4">
           <div className="h-4 w-28 animate-pulse rounded bg-brand-300/30" />
           <div className="h-7 w-7 animate-pulse rounded-lg bg-brand-300/30" />
@@ -27,8 +27,8 @@ export function ProjectsViewSkeleton() {
         </div>
       </div>
 
-      {/* Main panel */}
-      <div className="flex flex-1 flex-col items-center justify-center gap-8 overflow-hidden rounded-2xl border border-brand-200/40 bg-white/95 shadow-[0_4px_24px_rgba(44,26,14,0.07)] px-8 py-12">
+      {/* Main panel — hidden on mobile (sidebar takes full width) */}
+      <div className="hidden flex-1 flex-col items-center justify-center gap-8 overflow-hidden rounded-2xl border border-brand-200/40 bg-white/95 px-8 py-12 shadow-[0_4px_24px_rgba(44,26,14,0.07)] sm:flex">
         <div className="w-full max-w-2xl space-y-10">
           <div className="flex flex-col items-center gap-3">
             <div className="h-9 w-72 animate-pulse rounded-lg bg-brand-200/50" />

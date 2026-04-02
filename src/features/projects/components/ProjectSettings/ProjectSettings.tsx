@@ -58,7 +58,7 @@ export function ProjectSettings({ projectId, initialSources }: ProjectSettingsPr
   }
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden p-8">
+    <div className="flex flex-1 flex-col overflow-hidden p-4 sm:p-8">
       <div className="mb-8 flex flex-shrink-0 items-center gap-4">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-800/10">
           <BookOpen size={18} className="text-brand-700" strokeWidth={1.5} />

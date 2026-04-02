@@ -17,7 +17,7 @@ export function StatsBar({ totalProjects, totalSources, totalChats }: StatsBarPr
     <div className="flex items-center rounded-xl border border-brand-200 bg-white/60 w-fit">
       {stats.map((stat, index) => (
         <div key={stat.label} className="flex items-center">
-          <div className="flex items-center gap-3 px-7 py-4">
+          <div className="flex items-center gap-2 px-4 py-3 sm:gap-3 sm:px-7 sm:py-4">
             <stat.icon size={15} className="text-brand-400" strokeWidth={1.5} />
             <span className="font-display text-2xl font-bold tabular-nums text-espresso leading-none">
               {stat.count}

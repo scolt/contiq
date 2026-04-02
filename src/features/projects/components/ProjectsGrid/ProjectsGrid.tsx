@@ -46,25 +46,26 @@ export function ProjectsGrid({ data }: ProjectsGridProps) {
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
-      <div className="flex-shrink-0 border-b border-brand-200 px-10 pt-9 pb-7">
+      <div className="flex-shrink-0 border-b border-brand-200 px-4 pt-6 pb-5 sm:px-10 sm:pt-9 sm:pb-7">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.12em] text-brand-400">
               {data.userEmail}
             </p>
-            <h1 className="font-display text-[2.5rem] font-bold leading-none tracking-tight text-espresso">
+            <h1 className="font-display text-3xl font-bold leading-none tracking-tight text-espresso sm:text-[2.5rem]">
               Projects
             </h1>
             <p className="mt-2 text-sm text-brand-500">Your curated knowledge base</p>
           </div>
           <Button onClick={() => setModalOpen(true)} className="mt-1 flex items-center gap-2">
             <Plus size={14} strokeWidth={2} />
-            New Project
+            <span className="hidden sm:inline">New Project</span>
+            <span className="sm:hidden">New</span>
           </Button>
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col overflow-y-auto px-10 py-7 gap-6">
+      <div className="flex flex-1 flex-col overflow-y-auto px-4 py-5 gap-5 sm:px-10 sm:py-7 sm:gap-6">
         <StatsBar
           totalProjects={data.projects.length}
           totalSources={data.totalSources}

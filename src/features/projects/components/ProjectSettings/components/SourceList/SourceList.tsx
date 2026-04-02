@@ -8,6 +8,10 @@ interface SourceListProps {
   onReindex: (id: string) => void;
 }
 
+// Mobile: type | name | status | menu. Desktop: full 6-column layout.
+export const SOURCE_COLS =
+  "grid-cols-[auto_1fr_auto_44px] sm:grid-cols-[120px_1fr_120px_80px_120px_44px]";
+
 export function SourceList({ sources, onDelete, onReindex }: SourceListProps) {
   if (sources.length === 0) {
     return (
@@ -25,17 +29,17 @@ export function SourceList({ sources, onDelete, onReindex }: SourceListProps) {
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-brand-200/50 bg-white/90 shadow-[0_2px_12px_rgba(44,26,14,0.06)]">
-      <div className="grid flex-shrink-0 grid-cols-[120px_1fr_120px_80px_120px_44px] border-b border-brand-100 bg-brand-50/70 px-5 py-3">
+      <div className={`grid flex-shrink-0 ${SOURCE_COLS} border-b border-brand-100 bg-brand-50/70 px-4 py-3 sm:px-5`}>
         <span className="text-[10px] font-semibold uppercase tracking-widest text-brand-400">
           Type
         </span>
         <span className="text-[10px] font-semibold uppercase tracking-widest text-brand-400">
           Name
         </span>
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-brand-400">
+        <span className="hidden text-[10px] font-semibold uppercase tracking-widest text-brand-400 sm:block">
           Added
         </span>
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-brand-400">
+        <span className="hidden text-[10px] font-semibold uppercase tracking-widest text-brand-400 sm:block">
           Chunks
         </span>
         <span className="text-[10px] font-semibold uppercase tracking-widest text-brand-400">
@@ -56,4 +60,3 @@ export function SourceList({ sources, onDelete, onReindex }: SourceListProps) {
     </div>
   );
 }
-

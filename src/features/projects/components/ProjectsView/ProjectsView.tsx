@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { cn } from "@/libs/utils/cn";
 import { MessageSquarePlus, PenLine } from "lucide-react";
 import type { Project, Conversation } from "@/features/projects/queries/getProjects";
 import { PROJECT_ICON_MAP } from "@/features/projects/libs/projectIcons";
@@ -105,9 +106,16 @@ export function ProjectsView({ projects }: ProjectsViewProps) {
   }
 
   return (
-    <div className="flex flex-1 gap-3 overflow-hidden p-3">
-      {/* Warm sand sidebar */}
-      <div className="flex w-72 flex-shrink-0 flex-col overflow-hidden rounded-2xl border border-sand bg-parchment">
+    <div className="flex flex-1 overflow-hidden p-2 sm:gap-3 sm:p-3">
+      {/* Warm sand sidebar — full width on mobile, fixed 288px on desktop.
+          Hidden on mobile once a conversation is open (chat takes full screen). */}
+      <div
+        className={cn(
+          "flex flex-col overflow-hidden rounded-2xl border border-sand bg-parchment",
+          "w-full flex-shrink-0 sm:w-72",
+          selectedConversation ? "hidden sm:flex" : "flex",
+        )}
+      >
         {/* Sidebar header */}
         <div className="flex flex-shrink-0 items-center justify-between border-b border-sand px-5 py-4">
           <h1 className="font-display text-sm font-semibold italic text-espresso tracking-wide">
@@ -138,8 +146,8 @@ export function ProjectsView({ projects }: ProjectsViewProps) {
         </div>
       </div>
 
-      {/* Main area */}
-      <div className="flex-1 overflow-hidden">
+      {/* Main area — hidden on mobile when no conversation open (sidebar shows instead) */}
+      <div className={cn("overflow-hidden flex-1", !selectedConversation && "hidden sm:block")}>
         {selectedConversation ? (
           <ChatWindow
             conversation={selectedConversation}

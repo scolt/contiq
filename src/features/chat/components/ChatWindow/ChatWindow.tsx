@@ -126,7 +126,7 @@ export function ChatWindow({ conversation, onClose }: ChatWindowProps) {
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-2xl bg-white/95 shadow-[0_4px_24px_rgba(44,26,14,0.08)] border border-brand-200/40">
       {/* Header */}
-      <div className="flex flex-shrink-0 items-center justify-between border-b border-brand-100 bg-brand-50/50 px-6 py-4">
+      <div className="flex flex-shrink-0 items-center justify-between border-b border-brand-100 bg-brand-50/50 px-4 py-3 sm:px-6 sm:py-4">
         <div className="flex min-w-0 items-center gap-3">
           <div className="h-1.5 w-1.5 rounded-full bg-sienna/60 flex-shrink-0" />
           <h2 className="truncate font-display text-base font-semibold text-brand-900 italic">
@@ -144,7 +144,7 @@ export function ChatWindow({ conversation, onClose }: ChatWindowProps) {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 space-y-6 overflow-y-auto px-8 py-6">
+      <div className="flex-1 space-y-6 overflow-y-auto px-4 py-4 sm:px-8 sm:py-6">
         {isLoadingMessages ? (
           <ChatMessagesSkeleton />
         ) : (
@@ -156,7 +156,7 @@ export function ChatWindow({ conversation, onClose }: ChatWindowProps) {
       </div>
 
       {/* Input */}
-      <div className="flex-shrink-0 border-t border-brand-100 px-6 py-4">
+      <div className="flex-shrink-0 border-t border-brand-100 px-3 py-3 sm:px-6 sm:py-4">
         <ChatInput onSend={handleSend} disabled={isSending} />
       </div>
     </div>

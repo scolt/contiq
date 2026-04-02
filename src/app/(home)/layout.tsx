@@ -21,7 +21,7 @@ export default async function HomeLayout({ children }: { children: React.ReactNo
   const initials = user?.email?.slice(0, 2).toUpperCase() ?? "?";
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-[100dvh] flex-col overflow-hidden sm:flex-row">
       <NavBar tokensBalance={tokensBalance} initials={initials} />
       <div className="flex flex-1 overflow-hidden">{children}</div>
     </div>

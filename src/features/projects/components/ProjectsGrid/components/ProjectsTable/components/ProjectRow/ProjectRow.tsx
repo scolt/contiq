@@ -6,6 +6,7 @@ import { ArrowRight, FolderOpen } from "lucide-react";
 import { cn } from "@/libs/utils/cn";
 import type { ProjectRow } from "@/features/projects/queries/getProjects";
 import { PROJECT_ICON_MAP } from "@/features/projects/libs/projectIcons";
+import { TABLE_COLS } from "../../ProjectsTable";
 
 function formatRelative(date: Date | null): string {
   if (!date) return "—";
@@ -32,10 +33,9 @@ function formatFull(date: Date | null): string {
 
 interface ProjectTableRowProps {
   project: ProjectRow;
-  cols: string;
 }
 
-export function ProjectTableRow({ project, cols }: ProjectTableRowProps) {
+export function ProjectTableRow({ project }: ProjectTableRowProps) {
   const router = useRouter();
   const Icon = PROJECT_ICON_MAP[project.iconName] ?? FolderOpen;
 
@@ -44,55 +44,56 @@ export function ProjectTableRow({ project, cols }: ProjectTableRowProps) {
       role="row"
       onClick={() => router.push(`/projects/${project.id}`)}
       className={cn(
-        "group relative grid cursor-pointer items-center px-6 transition-colors duration-100 hover:bg-parchment/60",
-        cols,
+        "group relative grid cursor-pointer items-center px-4 transition-colors duration-100 hover:bg-parchment/60 sm:px-6",
+        TABLE_COLS,
       )}
       style={{ minHeight: "56px" }}
     >
-      {/* Checkbox (hover only, future bulk actions) */}
-      <div className="absolute left-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-        {/*<div className="h-4 w-4 rounded border border-brand-300 bg-white" />*/}
-      </div>
-
       {/* Name column */}
-      <div className="flex min-w-0 items-center gap-3 py-3.5 pl-4">
+      <div className="flex min-w-0 items-center gap-3 py-3.5 pl-1 sm:pl-4">
         <div
           className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border-sand border-1"
           style={{ backgroundColor: project.color }}
         >
           <Icon size={14} className="text-espresso" strokeWidth={1.5} />
         </div>
-        <span className="truncate text-sm font-semibold text-espresso">{project.name}</span>
+        <div className="min-w-0">
+          <span className="truncate text-sm font-semibold text-espresso">{project.name}</span>
+          {/* Mobile-only subtitle: show key stats inline */}
+          <p className="mt-0.5 text-xs text-brand-400 sm:hidden">
+            {project.sourcesCount} sources · {formatRelative(project.lastActive)}
+          </p>
+        </div>
       </div>
 
-      {/* Sources */}
-      <div className="pr-4 text-right">
+      {/* Sources — desktop only */}
+      <div className="hidden pr-4 text-right sm:block">
         <span className="font-mono text-sm tabular-nums text-brand-700">{project.sourcesCount}</span>
       </div>
 
-      {/* Chats */}
-      <div className="pr-4 text-right">
+      {/* Chats — desktop only */}
+      <div className="hidden pr-4 text-right sm:block">
         <span className="font-mono text-sm tabular-nums text-brand-700">{project.chatsCount}</span>
       </div>
 
-      {/* Last active */}
-      <div title={formatFull(project.lastActive)}>
+      {/* Last active — desktop only */}
+      <div className="hidden sm:block" title={formatFull(project.lastActive)}>
         <span className="text-sm text-brand-600">{formatRelative(project.lastActive)}</span>
       </div>
 
-      {/* Created */}
-      <div>
+      {/* Created — desktop only */}
+      <div className="hidden sm:block">
         <span className="text-sm text-brand-500">{formatDate(project.createdAt)}</span>
       </div>
 
-      {/* Actions */}
-      <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+      {/* Actions — always visible on mobile, hover-only on desktop */}
+      <div className="flex items-center justify-end gap-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
         <Link
           href={`/projects/${project.id}`}
           onClick={(e) => e.stopPropagation()}
           className="flex items-center gap-1 rounded-md border border-brand-200 bg-white px-2.5 py-1.5 text-xs font-medium text-brand-700 transition-colors hover:border-sienna hover:text-sienna"
         >
-          Open
+          <span className="hidden sm:inline">Open</span>
           <ArrowRight size={11} strokeWidth={2} />
         </Link>
       </div>

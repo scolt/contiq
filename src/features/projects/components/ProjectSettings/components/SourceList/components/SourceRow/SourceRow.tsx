@@ -24,6 +24,7 @@ import type {
   SourceStatus,
   SourceType,
 } from "../../../../ProjectSettings";
+import { SOURCE_COLS } from "../../SourceList";
 
 const TYPE_CONFIG: Record<
   SourceType,
@@ -112,7 +113,7 @@ export function SourceRow({ source, onDelete, onReindex }: SourceRowProps) {
 
   return (
     <>
-      <div className="grid grid-cols-[120px_1fr_120px_80px_120px_44px] items-center px-5 py-4 transition-colors hover:bg-brand-50/40">
+      <div className={`grid ${SOURCE_COLS} items-center px-4 py-3.5 transition-colors hover:bg-brand-50/40 sm:px-5 sm:py-4`}>
         <div
           className={cn(
             "inline-flex w-fit items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium",
@@ -130,9 +131,9 @@ export function SourceRow({ source, onDelete, onReindex }: SourceRowProps) {
           )}
         </div>
 
-        <span className="text-xs text-brand-500">{formatDate(source.createdAt)}</span>
+        <span className="hidden text-xs text-brand-500 sm:block">{formatDate(source.createdAt)}</span>
 
-        <span className="text-xs font-medium text-brand-700">
+        <span className="hidden text-xs font-medium text-brand-700 sm:block">
           {source.status === "ready" ? source.chunksCount : "—"}
         </span>
 

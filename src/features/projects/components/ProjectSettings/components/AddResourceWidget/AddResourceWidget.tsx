@@ -12,8 +12,8 @@ interface AddResourceWidgetProps {
 
 export function AddResourceWidget({ projectId }: AddResourceWidgetProps) {
   return (
-    <Tabs defaultValue="file" className="flex h-[360px] flex-col overflow-hidden rounded-2xl border border-brand-200/50 bg-white/90 shadow-[0_2px_16px_rgba(44,26,14,0.07)]">
-      <div className="flex flex-shrink-0 items-center justify-between border-b border-brand-100 px-5 py-4">
+    <Tabs defaultValue="file" className="flex h-[280px] flex-col overflow-hidden rounded-2xl border border-brand-200/50 bg-white/90 shadow-[0_2px_16px_rgba(44,26,14,0.07)] sm:h-[360px]">
+      <div className="flex flex-shrink-0 items-center justify-between border-b border-brand-100 px-4 py-3 sm:px-5 sm:py-4">
         <div className="flex items-center gap-2.5">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-sienna/10">
             <Plus size={14} className="text-sienna" strokeWidth={2} />
@@ -26,7 +26,7 @@ export function AddResourceWidget({ projectId }: AddResourceWidgetProps) {
           <TabsTrigger value="text"><AlignLeft size={12} strokeWidth={1.5} />Text</TabsTrigger>
         </TabsList>
       </div>
-      <div className="flex min-h-0 flex-1 flex-col px-5 py-5">
+      <div className="flex min-h-0 flex-1 flex-col px-4 py-4 sm:px-5 sm:py-5">
         <TabsContent value="file"><FileImport projectId={projectId} /></TabsContent>
         <TabsContent value="url"><URLImport projectId={projectId} /></TabsContent>
         <TabsContent value="text"><TextImport projectId={projectId} /></TabsContent>
