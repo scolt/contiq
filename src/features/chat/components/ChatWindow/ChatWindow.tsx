@@ -7,6 +7,7 @@ import type { Conversation } from "@/features/projects/queries/getProjects";
 import { Button } from "@/components/Button";
 import { ChatMessage, type ChatMessageData, type MessageSource } from "./components/ChatMessage/ChatMessage";
 import { ChatInput } from "./components/ChatInput/ChatInput";
+import { ChatMessagesSkeleton } from "./ChatWindow.fallback";
 import { getMessages } from "@/features/chat/queries/getMessages";
 
 const SOURCES_SENTINEL = "\n\n__SOURCES__";
@@ -18,13 +19,18 @@ interface ChatWindowProps {
 
 export function ChatWindow({ conversation, onClose }: ChatWindowProps) {
   const [messages, setMessages] = useState<ChatMessageData[]>([]);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   useEffect(() => {
     setMessages([]);
-    getMessages(conversation.id).then(setMessages);
+    setIsLoadingMessages(true);
+    getMessages(conversation.id).then((loadedMessages) => {
+      setMessages(loadedMessages);
+      setIsLoadingMessages(false);
+    });
   }, [conversation.id]);
 
   useEffect(() => {
@@ -139,9 +145,13 @@ export function ChatWindow({ conversation, onClose }: ChatWindowProps) {
 
       {/* Messages */}
       <div className="flex-1 space-y-6 overflow-y-auto px-8 py-6">
-        {messages.map((msg) => (
-          <ChatMessage key={msg.id} message={msg} />
-        ))}
+        {isLoadingMessages ? (
+          <ChatMessagesSkeleton />
+        ) : (
+          messages.map((msg) => (
+            <ChatMessage key={msg.id} message={msg} />
+          ))
+        )}
         <div ref={bottomRef} />
       </div>
 
